@@ -78,7 +78,8 @@ router.delete('/deletecode/:id', fetchuser, async (req, res) => {
         }
 
         code = await Code.findByIdAndDelete(req.params.id)
-        res.json({ "Response": "Content has been deleted", code: code });
+        res.json({ "Message": "Content has been deleted", code: code, "Response" : "true" });
+        
     } catch (error) {
         console.error(error.message);
         res.status(500).send("Internal Server Error");
