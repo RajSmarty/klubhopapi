@@ -1,3 +1,5 @@
+// Backend
+
 const connectToMongo = require('./db')
 const express = require('express')
 let cors = require('cors')
