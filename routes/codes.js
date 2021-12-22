@@ -8,7 +8,15 @@ const { body, validationResult } = require('express-validator');
 router.get('/fetchallcontent', fetchuser, async (req, res) => {
     try {
         const codes = await Code.find({ user: req.user.id });
-        res.json(codes)
+
+        if (codes.length == 0) {
+        res.json({ "Response" : "false"})
+            
+        } else {
+            
+            res.json({codes , "Response" : "true"})
+        }
+
     } catch (error) {
         console.error(error.message);
         res.status(500).send("Internal Server Error");
@@ -32,7 +40,7 @@ router.post('/addcontent', fetchuser, [
             })
             const savedCode = await code.save()
 
-            res.json(savedCode)
+            res.json({savedCode, "Response" : "true"})
 
         } catch (error) {
             console.error(error.message);
@@ -52,13 +60,13 @@ router.put('/updatecontent/:id', fetchuser, async (req, res) => {
 
         // Find the content to be updated and update it
         let code = await Code.findById(req.params.id);
-        if (!code) { return res.status(404).send("Not Found") }
+        if (!code) { return res.status(404).send({"Msg": "Not Found", "Response" : "false"}) }
 
         if (code.user.toString() !== req.user.id) {
             return res.status(401).send("Not Allowed");
         }
         code = await Code.findByIdAndUpdate(req.params.id, { $set: newCode }, { new: true })
-        res.json({ code });
+        res.json({ code, "Response" : "true" });
     } catch (error) {
         console.error(error.message);
         res.status(500).send("Internal Server Error");
@@ -70,7 +78,7 @@ router.delete('/deletecontent/:id', fetchuser, async (req, res) => {
     try {
         // Find the content to be delete and delete it
         let code = await Code.findById(req.params.id);
-        if (!code) { return res.status(404).send("Not Found") }
+        if (!code) { return res.status(404).send({"Msg": "Not Found", "Response" : "false"}) }
 
         // Allow deletion only if user owns this Content
         if (code.user.toString() !== req.user.id) {
@@ -78,8 +86,8 @@ router.delete('/deletecontent/:id', fetchuser, async (req, res) => {
         }
 
         code = await Code.findByIdAndDelete(req.params.id)
-        res.json({ "Message": "Content has been deleted", code: code, "Response" : "true" });
-        
+        res.json({ "Message": "Content has been deleted", code: code, "Response": "true" });
+
     } catch (error) {
         console.error(error.message);
         res.status(500).send("Internal Server Error");
